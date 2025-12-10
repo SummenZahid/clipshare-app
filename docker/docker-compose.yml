@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.backend
+    container_name: clipshare-backend
+    ports:
+      - "8000:80"
+    environment:
+      - PORT=80
+      - COSMOS_ENDPOINT=${COSMOS_ENDPOINT:-}
+      - COSMOS_KEY=${COSMOS_KEY:-}
+      - STORAGE_CONNECTION_STRING=${STORAGE_CONNECTION_STRING:-}
+      - ML_SERVER_URL=http://ml-server:5000
+    volumes:
+      - ../clipshare-backend/uploads:/app/uploads
+      - ../clipshare-backend/local_videos.json:/app/local_videos.json
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.frontend
+    container_name: clipshare-frontend
+    ports:
+      - "3000:80"
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000/api
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  ml-server:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.ml-server
+    container_name: clipshare-ml-server
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - MLFLOW_TRACKING_URI=file:./mlruns
+    volumes:
+      - ../ml-pipeline/models:/app/ml-pipeline/models
+      - ../ml-pipeline/mlruns:/app/ml-pipeline/mlruns
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+

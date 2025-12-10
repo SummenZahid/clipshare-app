@@ -1,0 +1,42 @@
+# ClipShare Frontend Dockerfile
+# React application with nginx for Azure deployment
+
+# Build stage
+FROM node:20-alpine AS build
+
+WORKDIR /app
+
+# Copy package files
+COPY clipshare-frontend/package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy frontend source code
+COPY clipshare-frontend/ .
+
+# Build the React app
+RUN npm run build
+
+# Production stage with nginx
+FROM nginx:alpine
+
+# Install gettext for envsubst (for environment variable substitution)
+RUN apk add --no-cache gettext
+
+# Copy built files from build stage (React builds to 'build' directory)
+COPY --from=build /app/build /usr/share/nginx/html
+
+# Copy nginx configuration
+COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copy entrypoint script
+COPY docker/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# Expose port 80 for Azure
+EXPOSE 80
+
+# Use entrypoint script to inject environment variables
+ENTRYPOINT ["/entrypoint.sh"]
+
