@@ -67,6 +67,7 @@ jobs:
   build-backend:
     needs: [test-backend]
     runs-on: ubuntu-latest
+    if: ${{ secrets.ACR_REGISTRY != '' }}
     steps:
       - uses: actions/checkout@v3
       
@@ -95,6 +96,7 @@ jobs:
   build-frontend:
     needs: [test-frontend]
     runs-on: ubuntu-latest
+    if: ${{ secrets.ACR_REGISTRY != '' }}
     steps:
       - uses: actions/checkout@v3
       
