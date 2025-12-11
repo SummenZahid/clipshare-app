@@ -163,16 +163,34 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
+      - name: Check Azure credentials
+        id: check_azure
+        run: |
+          if [ -z "$AZURE_CREDENTIALS" ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            echo "Azure credentials not configured, skipping deployment"
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+        env:
+          AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+      
       - name: Azure Login
+        if: steps.check_azure.outputs.skip != 'true'
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       
       - name: Deploy to Azure App Service (Staging)
+        if: steps.check_azure.outputs.skip != 'true'
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ secrets.AZURE_WEBAPP_NAME_STAGING }}
           images: ${{ secrets.ACR_REGISTRY }}/clipshare-backend:${{ github.sha }}
+      
+      - name: Skip deployment (Azure not configured)
+        if: steps.check_azure.outputs.skip == 'true'
+        run: echo "Skipping deployment - Azure credentials not configured. Add AZURE_CREDENTIALS secret to enable."
 
   deploy-production:
     needs: [build-backend, build-frontend]
@@ -181,14 +199,32 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
+      - name: Check Azure credentials
+        id: check_azure
+        run: |
+          if [ -z "$AZURE_CREDENTIALS" ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            echo "Azure credentials not configured, skipping deployment"
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+        env:
+          AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+      
       - name: Azure Login
+        if: steps.check_azure.outputs.skip != 'true'
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       
       - name: Deploy to Azure App Service (Production)
+        if: steps.check_azure.outputs.skip != 'true'
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
           images: ${{ secrets.ACR_REGISTRY }}/clipshare-backend:${{ github.sha }}
+      
+      - name: Skip deployment (Azure not configured)
+        if: steps.check_azure.outputs.skip == 'true'
+        run: echo "Skipping deployment - Azure credentials not configured. Add AZURE_CREDENTIALS secret to enable."
 
