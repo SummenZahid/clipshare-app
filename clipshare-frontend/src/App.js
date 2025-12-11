@@ -12,6 +12,7 @@ import Footer from './components/Footer';
 import { fetchVideos, fetchStats } from './utils/api';
 
 function App() {
+  console.log("App component rendered");
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
