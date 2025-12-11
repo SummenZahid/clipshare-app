@@ -66,3 +66,7 @@ clipshare-backend/uploads/videos/*
 !clipshare-backend/uploads/videos/.gitkeep
 clipshare-backend/local_videos.json
 
+# Documentation files
+*.md
+!README.md
+
