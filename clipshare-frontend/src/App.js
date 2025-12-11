@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './App.css';
 import Header from './components/Header';
 import UploadForm from './components/UploadForm';
@@ -18,15 +18,7 @@ function App() {
   const [stats, setStats] = useState(null);
   const [selectedVideo, setSelectedVideo] = useState(null);
 
-  useEffect(() => {
-    loadInitialData();
-  }, []);
-
-  const loadInitialData = async () => {
-    await Promise.all([loadVideos(), loadStats()]);
-  };
-
-  const loadVideos = async () => {
+  const loadVideos = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -37,16 +29,25 @@ function App() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const loadStats = async () => {
+  const loadStats = useCallback(async () => {
     try {
       const statsData = await fetchStats();
       setStats(statsData);
     } catch (error) {
       console.error('Stats error:', error);
     }
-  };
+  }, []);
+
+  const loadInitialData = useCallback(async () => {
+    await Promise.all([loadVideos(), loadStats()]);
+  }, [loadVideos, loadStats]);
+
+  useEffect(() => {
+    loadInitialData();
+  }, [loadInitialData]);
+
 
   const handleUploadSuccess = () => {
     loadInitialData();
