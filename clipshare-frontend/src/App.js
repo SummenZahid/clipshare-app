@@ -10,7 +10,6 @@ import ErrorMessage from './components/ErrorMessage';
 import EmptyState from './components/EmptyState';
 import Footer from './components/Footer';
 import { fetchVideos, fetchStats } from './utils/api';
-import { API_BASE_URL } from './constants/api';
 
 function App() {
   const [videos, setVideos] = useState([]);
