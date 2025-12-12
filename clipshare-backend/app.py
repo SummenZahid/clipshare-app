@@ -32,7 +32,7 @@ CORS(app,
      origins=origins,
      methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
      allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
-     supports_credentials=True,
+     supports_credentials=False,
      expose_headers=["Content-Range", "X-Content-Range"])
 
 app.config['MAX_CONTENT_LENGTH'] = 500 * 1024 * 1024
