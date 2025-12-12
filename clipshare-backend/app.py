@@ -23,7 +23,7 @@ app = Flask(__name__)
 # Configure CORS for deployment
 CORS(
     app,
-    resources={r"/api/*": {"origins": "https://clipshare-frontend-summen-a6d5ghb2afc0fqb4.spaincentral-01.azurewebsites.net"}},
+    resources={r"/api/*": {"origins": ["https://clipshare-frontend-summen-a6d5ghb2afc0fqb4.spaincentral-01.azurewebsites.net"]}},
     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
     supports_credentials=False,  # keep False unless you REALLY need cookies
