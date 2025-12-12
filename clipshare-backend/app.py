@@ -19,7 +19,21 @@ except ImportError:
     COGNITIVE_SERVICES_AVAILABLE = False
 
 app = Flask(__name__)
-CORS(app)
+
+# Configure CORS for deployment
+# Allow specific origins from environment variable, or allow all if not set
+cors_origins = os.environ.get('CORS_ORIGINS', '*')
+if cors_origins == '*':
+    origins = '*'
+else:
+    origins = [origin.strip() for origin in cors_origins.split(',')]
+
+CORS(app, 
+     origins=origins,
+     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+     allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
+     supports_credentials=True,
+     expose_headers=["Content-Range", "X-Content-Range"])
 
 app.config['MAX_CONTENT_LENGTH'] = 500 * 1024 * 1024
 app.config['UPLOAD_FOLDER'] = 'uploads'
