@@ -21,19 +21,14 @@ except ImportError:
 app = Flask(__name__)
 
 # Configure CORS for deployment
-# Allow specific origins from environment variable, or allow all if not set
-cors_origins = os.environ.get('CORS_ORIGINS', '*')
-if cors_origins == '*':
-    origins = '*'
-else:
-    origins = [origin.strip() for origin in cors_origins.split(',')]
-
-CORS(app, 
-     origins=origins,
-     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-     allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
-     supports_credentials=False,
-     expose_headers=["Content-Range", "X-Content-Range"])
+CORS(
+    app,
+    resources={r"/api/*": {"origins": "https://clipshare-frontend-summen-a6d5ghb2afc0fqb4.spaincentral-01.azurewebsites.net"}},
+    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
+    supports_credentials=False,  # keep False unless you REALLY need cookies
+    expose_headers=["Content-Range", "X-Content-Range"],
+)
 
 app.config['MAX_CONTENT_LENGTH'] = 500 * 1024 * 1024
 app.config['UPLOAD_FOLDER'] = 'uploads'

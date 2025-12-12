@@ -10,6 +10,7 @@ import ErrorMessage from './components/ErrorMessage';
 import EmptyState from './components/EmptyState';
 import Footer from './components/Footer';
 import { fetchVideos, fetchStats } from './utils/api';
+import { API_BASE_URL } from './constants/api';
 
 function App() {
   const [videos, setVideos] = useState([]);
@@ -25,7 +26,7 @@ function App() {
       const videosData = await fetchVideos();
       setVideos(videosData);
     } catch (error) {
-      setError('Failed to load videos. Is the backend running at http://localhost:8000?');
+      setError(`Failed to load videos.`);
     } finally {
       setLoading(false);
     }
